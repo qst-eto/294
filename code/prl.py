@@ -369,6 +369,8 @@ def run(args):
         reward_count = 0
         outside_failures = 0
         schedule_trial_index = 0
+        
+        high_label_offset = 0
 
         correction_mode_enabled = bool(args.correction_mode)
         correction_active = False
@@ -499,6 +501,8 @@ def run(args):
             pygame.display.flip()
 
         def place_new_trial():
+            nonlocal high_label_offset
+            
             nonlocal left_is_r, left_surf, right_surf
             nonlocal left_rect, right_rect, left_plate_rect, right_plate_rect
             nonlocal current_context, current_trial_is_correction
@@ -506,7 +510,15 @@ def run(args):
             if schedule_trial_index >= total_trials:
                 return False
 
-            info = sched.lookup(schedule_trial_index)
+            info = dict(sched.lookup(schedule_trial_index))
+            
+            if args.reverse_high_with_block:
+                if info["trial_in_block"] == 0 and info["block_index"] > 0:
+                    high_label_offset ^= 1
+
+                if high_label_offset:
+                    info["high_label"] = "nr" if info["high_label"] == "r" else "r"
+            
             cur_pair = pair_for_block(info["block_index"])
             current_trial_is_correction = correction_mode_enabled and correction_active
 
@@ -881,6 +893,9 @@ def parse_args(argv: Optional[List[str]] = None):
     p.add_argument("--info", action="store_true")
     p.add_argument("--pulsecount", type=int, default=1)
     p.add_argument("--sth", type=float,default=0)
+    
+    p.add_argument("--reverse-high-with-block", action="store_true", default=False, help="Reverse which image is HIGH whenever a new block starts.")
+
 
 
     return p.parse_args(argv)
