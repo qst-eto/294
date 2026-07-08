@@ -631,7 +631,7 @@ def run(args):
                             if reward_won:
                                 screen.fill((0,0,0))
                                 pygame.display.flip()
-                                ttl_ok, _beep_ok = deliver_reward(ttl, beep, args.pulsecount)
+                                ttl_ok, _beep_ok = deliver_reward(ttl, beep, pulsecount=args.pulsecount)
                                 reward_delivered = 1 if ttl_ok else 0
 
                             iti_kind = "rewarded" if reward_won else "unrewarded"
