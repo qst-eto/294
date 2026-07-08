@@ -282,6 +282,8 @@ def run(args):
             plate_h,
             int(args.center_offset_px),
             edge_margin,
+            sth = args.sth,
+            
         )
         if center_offset < int(args.center_offset_px):
             print(f"[WARN] center-offset clamped to {center_offset}px", file=sys.stderr)
@@ -378,6 +380,7 @@ def run(args):
         left_surf = None
         right_surf = None
         current_context = None
+        
 
         def pair_for_block(block_index: int):
             if args.stim_per_block == "fixed":
@@ -626,7 +629,9 @@ def run(args):
                             ttl_ok = True
 
                             if reward_won:
-                                ttl_ok, _beep_ok = deliver_reward(ttl, beep)
+                                screen.fill((0,0,0))
+                                pygame.display.flip()
+                                ttl_ok, _beep_ok = deliver_reward(ttl, beep, args.pulsecount)
                                 reward_delivered = 1 if ttl_ok else 0
 
                             iti_kind = "rewarded" if reward_won else "unrewarded"
@@ -874,6 +879,9 @@ def parse_args(argv: Optional[List[str]] = None):
     p.add_argument("--out-dir", type=str, default="logs")
     p.add_argument("--show-box", action="store_true")
     p.add_argument("--info", action="store_true")
+    p.add_argument("--pulsecount", type=int, default=1)
+    p.add_argument("--sth", type=float,default=0)
+
 
     return p.parse_args(argv)
 

@@ -98,6 +98,7 @@ def compute_two_choice_rects(
     plate_h: int,
     center_offset_px: int,
     edge_margin_px: int,
+    sth: float=0,
 ) -> Tuple[TwoChoiceRects, int]:
     max_offset = max(0, (sw // 2) - (plate_w // 2) - edge_margin_px)
     center_offset = min(max_offset, max(0, center_offset_px))
@@ -107,10 +108,10 @@ def compute_two_choice_rects(
     right_cx = (sw // 2) + center_offset
 
     rects = TwoChoiceRects(
-        left=RectSpec(left_cx - item_w // 2, cy - item_h // 2, item_w, item_h),
-        right=RectSpec(right_cx - item_w // 2, cy - item_h // 2, item_w, item_h),
-        left_plate=RectSpec(left_cx - plate_w // 2, cy - plate_h // 2, plate_w, plate_h),
-        right_plate=RectSpec(right_cx - plate_w // 2, cy - plate_h // 2, plate_w, plate_h),
+        left=RectSpec(left_cx - item_w // 2, cy - item_h // 2 + sth, item_w, item_h),
+        right=RectSpec(right_cx - item_w // 2, cy - item_h // 2 + sth, item_w, item_h),
+        left_plate=RectSpec(left_cx - plate_w // 2, cy - plate_h // 2 + sth, plate_w, plate_h),
+        right_plate=RectSpec(right_cx - plate_w // 2, cy - plate_h // 2 + sth, plate_w, plate_h),
     )
     return rects, center_offset
 

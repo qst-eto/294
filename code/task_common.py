@@ -4,6 +4,7 @@ import hashlib
 import math
 import random
 import sys
+import time
 from typing import Optional, Tuple
 
 try:
@@ -97,15 +98,9 @@ def make_beep_sound(freq_hz: int, ms: int, volume: float):
     return pygame.mixer.Sound(buffer=samples.tobytes())
 
 
-def deliver_reward(ttl, beep) -> Tuple[bool, bool]:
+def deliver_reward(ttl, beep, pulsecount: int = 1) -> Tuple[bool, bool]:
     ttl_ok = False
     beep_ok = False
-
-    try:
-        ttl.pulse()
-        ttl_ok = True
-    except Exception:
-        ttl_ok = False
 
     if beep is not None:
         try:
@@ -113,6 +108,17 @@ def deliver_reward(ttl, beep) -> Tuple[bool, bool]:
             beep_ok = True
         except Exception:
             beep_ok = False
+
+    try:
+        for i in range(pulsecount):
+            ttl.pulse()
+            time.sleep(0.28)
+            print(pulse)
+        ttl_ok = True
+    except Exception:
+        ttl_ok = False
+
+
 
     return (ttl_ok, beep_ok)
 
