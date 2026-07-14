@@ -98,12 +98,22 @@ def load_or_generate_schedule(args):
     return sched
 
 
-def resolve_trial(sched, global_trial: int, chosen_label: str, reward_rng) -> Dict:
+def resolve_trial(
+    sched,
+    global_trial: int,
+    chosen_label: str,
+    reward_rng,
+    reverse_high=False,
+) -> Dict:
     if chosen_label not in ("r", "nr"):
         raise ValueError("chosen_label must be 'r' or 'nr'")
 
-    info = sched.lookup(global_trial)
+    info = dict(sched.lookup(global_trial))
     high_label = info["high_label"]
+
+    if reverse_high:
+        high_label = "nr" if high_label == "r" else "r"
+        info["high_label"] = high_label
     p_high = info["p_high"]
     p_low = info["p_low"]
     is_correct = chosen_label == high_label
@@ -369,8 +379,6 @@ def run(args):
         reward_count = 0
         outside_failures = 0
         schedule_trial_index = 0
-        
-        high_label_offset = 0
 
         correction_mode_enabled = bool(args.correction_mode)
         correction_active = False
@@ -501,7 +509,6 @@ def run(args):
             pygame.display.flip()
 
         def place_new_trial():
-            nonlocal high_label_offset
             
             nonlocal left_is_r, left_surf, right_surf
             nonlocal left_rect, right_rect, left_plate_rect, right_plate_rect
@@ -512,12 +519,15 @@ def run(args):
 
             info = dict(sched.lookup(schedule_trial_index))
             
-            if args.reverse_high_with_block:
-                if info["trial_in_block"] == 0 and info["block_index"] > 0:
-                    high_label_offset ^= 1
+            reverse_high = (
+            args.reverse_high_with_block
+            and (info["block_index"] % 2 == 1)
+            )
 
-                if high_label_offset:
-                    info["high_label"] = "nr" if info["high_label"] == "r" else "r"
+            if reverse_high:
+                info["high_label"] = (
+                "nr" if info["high_label"] == "r" else "r"
+            )
             
             cur_pair = pair_for_block(info["block_index"])
             current_trial_is_correction = correction_mode_enabled and correction_active
@@ -535,6 +545,7 @@ def run(args):
                 "global_trial": schedule_trial_index,
                 "info": info,
                 "pair": cur_pair,
+                "reverse_high": reverse_high,
                 "left_label": "r" if left_is_r else "nr",
                 "right_label": "nr" if left_is_r else "r",
                 "left_image": cur_pair.r_path.name if left_is_r else cur_pair.nr_path.name,
@@ -635,7 +646,13 @@ def run(args):
                                 hit_area = "right_core" if right_plate_rect.collidepoint((x, y)) else "right_margin"
                                 chosen_label = "nr" if left_is_r else "r"
 
-                            result = resolve_trial(sched, current_context["global_trial"], chosen_label, reward_rng)
+                            result = resolve_trial(
+                                sched,
+                                current_context["global_trial"],
+                                chosen_label,
+                                reward_rng,
+                                reverse_high=current_context["reverse_high"],
+                            )
                             reward_won = bool(result["reward_won"])
                             reward_delivered = 0
                             ttl_ok = True
@@ -832,7 +849,7 @@ def parse_args(argv: Optional[List[str]] = None):
     p.add_argument("--block-len-trials", type=int, default=80)
     p.add_argument("--reversal-min-trial", type=int, default=30)
     p.add_argument("--reversal-max-trial", type=int, default=50)
-    p.add_argument("--schedule-set", choices=["80-20", "70-30", "60-40", "mixed"], default="80-20")
+    p.add_argument("--schedule-set", choices=["80-20", "70-30", "60-40","90-10", "mixed"], default="80-20")
     p.add_argument("--initial-high-label", choices=["r", "nr", "random"], default="r")
 
     p.add_argument("--fullscreen", action="store_true")
