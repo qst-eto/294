@@ -1,4 +1,0 @@
-start_iso,iso,rel_s,state,x,y,rect_w,rect_h,iti_ms,event,outside_in_trial,max_outside_before_fail,trial_outcome,iti_kind,release_dwell_required_ms,release_dwell_elapsed_ms
-2026-04-10T16:11:13.648,2026-04-10T16:11:18.859,5.210744,SHOW,931,598,1080,1080,1000,TOUCH_TTL,0,,success,correct,,
-2026-04-10T16:11:13.648,2026-04-10T16:11:19.860,6.211884,WAIT_RELEASE,-1,-1,1080,1080,0,RELEASE_DWELL_WILL_REQUIRE,,,,,2000,
-2026-04-10T16:11:13.648,2026-04-10T16:11:19.860,6.211939,WAIT_RELEASE,-1,-1,1080,1080,0,RELEASE_DWELL_START,,,,,2000,

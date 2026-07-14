@@ -6,7 +6,7 @@ import random
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
 
-SCHEDULE_SETS = {"80-20": (0.80, 0.20), "70-30": (0.70, 0.30), "60-40": (0.60, 0.40)}
+SCHEDULE_SETS = {"80-20": (0.80, 0.20), "70-30": (0.70, 0.30), "60-40": (0.60, 0.40),"90-10": (0.90,0.10)}
 
 
 def _derive_rng(master_seed: int, stream: str) -> random.Random:
@@ -60,7 +60,7 @@ class ReversalSchedule:
         else:
             raise ValueError("initial_high_label must be 'r', 'nr', or 'random'")
 
-        schedule_keys = ["80-20", "70-30", "60-40"]
+        schedule_keys = ["80-20", "70-30", "60-40","90-10"]
         if schedule_set != "mixed" and schedule_set not in SCHEDULE_SETS:
             raise ValueError("schedule_set must be one of 80-20, 70-30, 60-40, or mixed")
 
